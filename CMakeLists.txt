@@ -18,7 +18,7 @@ string(APPEND CMAKE_CXX_FLAGS
       " -Wshadow -Wimplicit-fallthrough -Wextra-semi -Wold-style-cast"
       " -fno-omit-frame-pointer")
 
-string(APPEND CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+string(APPEND CMAKE_CXX_FLAGS_RELEASE " -O3  -DNDEBUG")
 # abilita asserzioni della standard library
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_ASSERTIONS")

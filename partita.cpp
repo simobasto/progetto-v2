@@ -25,7 +25,7 @@ void Gioco::controllo_fine_partita_(const ListaMosse& mosse_disponibili) {
     partita_in_corso_ = false;
 
     // stampiamo la scacchiera in assetto finale
-    static_cast<void>(std::system("clear"));
+   [[maybe_unused]] std::system("clear");
     b_.stampa_scacchiera();
 
     if (b_.re_sotto_scacco(b_.ottieni_turno(), m_)) {
@@ -51,7 +51,7 @@ void Gioco::umano_turno_bianco_() {
   auto inizio_turno = std::chrono::high_resolution_clock::now();
 
   while (!mossa_eseguita) {
-    static_cast<void>(std::system("clear"));
+    [[maybe_unused]] std::system("clear");
     b_.stampa_scacchiera();
 
     if (tentativi_falliti > 0) {
@@ -99,7 +99,7 @@ void Gioco::umano_turno_bianco_() {
 }  // umano_turno_bianco_
 
 void Gioco::bot_turno_bianco_() {
-  static_cast<void>(std::system("clear"));
+  [[maybe_unused]] std::system("clear");
   b_.stampa_scacchiera();
 
   std::cout << "il BOT BIANCO sta pensando... \n";
