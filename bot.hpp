@@ -84,8 +84,6 @@ class Bot {
                                  const mosse& m);  // calcola la mossa miglire
 
   // METODI PUBBLICI USATI SOLO IN test.cpp PER TESTARE I METODI PRIVATI
-
-#ifndef NDEBUG  // contenuto ignorato in modalitá Release
   int test_valuta_scacchiera(const Board& b) const {
     return valuta_scacchiera_(b);
   }
@@ -93,6 +91,6 @@ class Bot {
   int test_determina_profondita_ottimale_(const Board& b) const {
     return determina_profondita_ottimale_(b);
   }
-#endif
+
 };
 }  // namespace scacchi

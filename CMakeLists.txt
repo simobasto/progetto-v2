@@ -18,7 +18,7 @@ string(APPEND CMAKE_CXX_FLAGS
       " -Wshadow -Wimplicit-fallthrough -Wextra-semi -Wold-style-cast"
       " -fno-omit-frame-pointer")
 
-string(APPEND CMAKE_CXX_FLAGS_RELEASE " -O3  -DNDEBUG")
+string(APPEND CMAKE_CXX_FLAGS_RELEASE " -O3 ")
 # abilita asserzioni della standard library
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   string(APPEND CMAKE_CXX_FLAGS " -D_GLIBCXX_ASSERTIONS")
@@ -40,7 +40,7 @@ add_executable(scacchi main.cpp struttura.cpp bot.cpp generatore_di_mosse.cpp pa
 
 # il testing e' abilitato di default
 # per disabilitarlo, passare -DBUILD_TESTING=OFF a cmake durante la fase di configurazione
-if (BUILD_TESTING AND NOT CMAKE_BUILD_TYPE STREQUAL "Release")
+if (BUILD_TESTING)
 
 add_executable(esegui_test test.cpp struttura.cpp bot.cpp generatore_di_mosse.cpp partita.cpp)
 add_test(NAME esegui_test COMMAND esegui_test)

@@ -154,10 +154,8 @@ class Board {
   int conta_pezzi() const;
   int conta_pezzi_maggiori() const;
 
-#ifndef NDEBUG  // contenuto ignorato in modalitá Release
-
+   // METODO PUBBLICO USATO SOLO IN test.cpp PER TESTARE IL METODO PRIVATO
   int test_en_passant() const { return casella_en_passant_; }
 
-#endif
 };
 }  // namespace scacchi

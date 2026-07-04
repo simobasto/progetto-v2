@@ -26,7 +26,7 @@ void Gioco::controllo_fine_partita_(const ListaMosse& mosse_disponibili) {
     partita_in_corso_ = false;
 
     // stampiamo la scacchiera in assetto finale
-    std::system("clear");
+   [[maybe_unused]] int evito_warning = std::system("clear"); //dava warning per valore inutilizzato
     b_.stampa_scacchiera();
 
     if (b_.re_sotto_scacco(b_.ottieni_turno(), m_)) {
@@ -50,7 +50,7 @@ void Gioco::umano_turno_generalizzato_(long int& tempo_rimasto,
 
   auto inizio_turno = std::chrono::high_resolution_clock::now();
   while (!mossa_eseguita) {
-    std::system("clear");
+   [[maybe_unused]] int evito_warning = std::system("clear"); //dava warning per valore inutilizzato
     b_.stampa_scacchiera();
 
     if (tentativi_falliti > 0) {
@@ -106,7 +106,7 @@ void Gioco::umano_turno_nero_() {
 
 void Gioco::bot_turno_generalizzato_(long int& tempo_rimasto,
                                      std::string colore) {
-  std::system("clear");
+  [[maybe_unused]] int evito_warning = std::system("clear"); //dava warning per valore inutilizzato
   b_.stampa_scacchiera();
 
   std::cout << "il BOT  " << colore << " sta pensando... \n";
