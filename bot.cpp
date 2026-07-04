@@ -36,7 +36,7 @@ int Bot::valuta_scacchiera_(const Board& b) const {
 
     switch (pezzo_corrente.tipo) {
       case Tipo::re:
-        v_standard = 2000000;
+        v_standard = 200000;
         if (e_endgame) {
           v_pos = pst_re_endgame[indx];
         } else {

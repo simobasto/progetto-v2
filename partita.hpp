@@ -14,8 +14,8 @@ class Gioco {
 
   // oggetti legati alla partita
   int modalita_{0};
-  long int tempo_bianco_{900};
-  long int tempo_nero_{900};
+  long int tempo_bianco_{600};
+  long int tempo_nero_{600};
   bool partita_in_corso_{true};
 
   // funzioni di gioco
