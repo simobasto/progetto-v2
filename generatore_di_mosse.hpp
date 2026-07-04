@@ -11,6 +11,7 @@ class ArrayMosse {
 
  public:
   void push_back(int val) {
+    assert(conteggio_ < N); //non succede ma se succede...
     dati_[conteggio_] = val;
     ++conteggio_;
   }

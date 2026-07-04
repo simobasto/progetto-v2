@@ -26,7 +26,7 @@ void Gioco::controllo_fine_partita_(const ListaMosse& mosse_disponibili) {
     partita_in_corso_ = false;
 
     // stampiamo la scacchiera in assetto finale
-    [[maybe_unused]] int scarto = std::system("clear");
+    std::system("clear");
     b_.stampa_scacchiera();
 
     if (b_.re_sotto_scacco(b_.ottieni_turno(), m_)) {
@@ -50,7 +50,7 @@ void Gioco::umano_turno_generalizzato_(long int& tempo_rimasto,
 
   auto inizio_turno = std::chrono::high_resolution_clock::now();
   while (!mossa_eseguita) {
-    [[maybe_unused]] int scarto = std::system("clear");
+    std::system("clear");
     b_.stampa_scacchiera();
 
     if (tentativi_falliti > 0) {
@@ -87,7 +87,7 @@ void Gioco::umano_turno_generalizzato_(long int& tempo_rimasto,
       tempo_rimasto -= secondi_passati;
       std::string vincitore = (colore == "BIANCO") ? "NERO" : "BIANCO";
       if (tempo_rimasto <= 0) {
-        std::cout << "TEMPO SCADUTO, VINCE IL" << vincitore << "\n";
+        std::cout << "TEMPO SCADUTO, VINCE IL " << vincitore << "\n";
 
         partita_in_corso_ = false;
         return;
@@ -106,10 +106,10 @@ void Gioco::umano_turno_nero_() {
 
 void Gioco::bot_turno_generalizzato_(long int& tempo_rimasto,
                                      std::string colore) {
-  [[maybe_unused]] int scarto = std::system("clear");
+  std::system("clear");
   b_.stampa_scacchiera();
 
-  std::cout << "il BOT " << colore << " sta pensando... \n";
+  std::cout << "il BOT  " << colore << " sta pensando... \n";
 
   auto inizio_turno = std::chrono::high_resolution_clock::now();
   auto mossa_bot = bot_.trova_mossa_migliore(b_, m_);
@@ -154,9 +154,17 @@ void Gioco::giochiamo() {
   seleziona_modalita_();
 
   while (partita_in_corso_) {
+    if (b_.e_triplice_ripetizione()) {
+      std::cout << "PATTA PER TRIPLICE RIPETIZIONE!\n";
+      b_.stampa_scacchiera();
+      partita_in_corso_ = false;
+      break;
+    }
+
     scacchi::ListaMosse mosse_disponibili;
     b_.ricerca_mosse_legali(m_, mosse_disponibili);
     controllo_fine_partita_(mosse_disponibili);
+
     if (!partita_in_corso_) break;
 
     if (b_.ottieni_turno() == Colore::bianco) {

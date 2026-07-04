@@ -6,13 +6,13 @@ int Bot::determina_profondita_ottimale_(const Board& b) const {
   int pezzi_rimasti{b.conta_pezzi()};
 
   if (pezzi_rimasti > 22) {
-    return 6;  // inizio gioco
+    return 4;  // inizio gioco
   } else if (pezzi_rimasti > 14) {
-    return 7;  // inizio miedio gioco
+    return 5;  // inizio miedio gioco
   } else if (pezzi_rimasti > 8) {
-    return 8;  // medio gioco puro
+    return 6;  // medio gioco puro
   } else {
-    return 9;  // endgame
+    return 7;  // endgame
   }
 }
 
@@ -42,7 +42,7 @@ int Bot::valuta_scacchiera_(const Board& b) const {
         } else {
           v_pos = pst_re[indx];
         }
-        if (indx == 2 || indx == 6) {
+        if (!e_endgame && (indx == 2 || indx == 6)) {
           v_pos += 40;
         }
         break;
@@ -159,7 +159,7 @@ int Bot::assegna_priorita_mossa_(const movimento& mossa) const {
 // ordina il vettore
 void Bot::ordina_mosse_(ListaMosse& lista_mosse) const {
   // se c'è una sola mossa non c'è nulla da ordinare
-    size_t dimensione = lista_mosse.size();
+  size_t dimensione = lista_mosse.size();
   if (dimensione <= 1) return;
 
   // Array di punteggi
@@ -172,16 +172,14 @@ void Bot::ordina_mosse_(ListaMosse& lista_mosse) const {
   std::array<size_t, 256> indici;
   for (size_t i = 0; i < dimensione; ++i) indici[i] = i;
 
-  
-  
-  std::sort(indici.begin(), indici.begin() + dimensione, [&punteggi](size_t a, size_t b) {
-      return punteggi[a] > punteggi[b];
-  });
+  std::sort(
+      indici.begin(), indici.begin() + dimensione,
+      [&punteggi](size_t a, size_t b) { return punteggi[a] > punteggi[b]; });
 
   // Ricostruiamo la lista originale spostando i movimenti una sola volta
   ListaMosse lista_ordinata;
   for (size_t i = 0; i < dimensione; ++i) {
-      lista_ordinata.push_back(lista_mosse[indici[i]]);
+    lista_ordinata.push_back(lista_mosse[indici[i]]);
   }
 
   lista_mosse = lista_ordinata;
@@ -194,11 +192,10 @@ int Bot::alfa_beta_(Board& b, const mosse& m, int profondita, int alfa,
     int punteggio_attuale = valuta_scacchiera_(b);
 
     if (massimizza) {
-      if (punteggio_attuale >= beta)
-        return beta;  // non controllo nulla se la mossa é giá ottima
+      if (punteggio_attuale >= beta) return punteggio_attuale; 
       alfa = std::max(alfa, punteggio_attuale);
     } else {
-      if (punteggio_attuale <= alfa) return alfa;  // idem
+      if (punteggio_attuale <= alfa) return punteggio_attuale; 
       beta = std::min(beta, punteggio_attuale);
     }
 
@@ -338,15 +335,15 @@ movimento Bot::trova_mossa_migliore(Board& b, const mosse& m) {
       }
     }
 
+    int alfa = std::numeric_limits<int>::min();
+    int beta = std::numeric_limits<int>::max();
+
     int punteggio_max{sono_bianco ? std::numeric_limits<int>::min()
                                   : std::numeric_limits<int>::max()};
     ListaMosse mosse_ottime;
 
     for (auto& mossa : mosse_legali) {
       b.esegui_mossa(mossa);
-
-      int alfa = std::numeric_limits<int>::min();
-      int beta = std::numeric_limits<int>::max();
 
       int eval = alfa_beta_(b, m, profondita - 1, alfa, beta, !sono_bianco, 1);
       b.annulla_mossa(mossa);
@@ -357,6 +354,7 @@ movimento Bot::trova_mossa_migliore(Board& b, const mosse& m) {
           mosse_ottime.clear();
           mosse_ottime.push_back(mossa);
           mossa_migliore = mossa;  // aggiorna la migliore
+          alfa = std::max(alfa, punteggio_max); // Restringe alfa
         } else if (eval == punteggio_max) {
           mosse_ottime.push_back(mossa);
         }
@@ -366,6 +364,7 @@ movimento Bot::trova_mossa_migliore(Board& b, const mosse& m) {
           mosse_ottime.clear();
           mosse_ottime.push_back(mossa);
           mossa_migliore = mossa;  // aggiorna la migliore
+          beta = std::min(beta, punteggio_max); // Restringe beta
         } else if (eval == punteggio_max) {
           mosse_ottime.push_back(mossa);
         }

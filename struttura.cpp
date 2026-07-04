@@ -43,7 +43,7 @@ ChiavePosizione Board::ottieni_chiave_posizione_() const {
         }
     }
 
-    chiave[++pos] = (ottieni_turno() == Colore::bianco) ? 'W' : 'B';
+    chiave[pos] = (ottieni_turno() == Colore::bianco) ? 'W' : 'B';
     chiave[++pos] = arrocco_bianco_corto_ ? 'K' : '-';
     chiave[++pos] = arrocco_bianco_lungo_ ? 'Q' : '-';
     chiave[++pos] = arrocco_nero_corto_   ? 'k' : '-';
@@ -110,6 +110,7 @@ void Board::ripristino() {
 
   // inizia con la mossa bianca
   turno_ = Colore::bianco;
+  cronologia_posizioni_.push_back(ottieni_chiave_posizione_());
 }
 
 void Board::esegui_mossa(movimento& m) {

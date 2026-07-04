@@ -2,6 +2,7 @@
 #include <chrono>
 #include <iostream>
 #include <thread>
+#include <cstdlib>
 
 #include "bot.hpp"
 namespace scacchi {
