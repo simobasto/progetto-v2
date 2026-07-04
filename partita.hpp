@@ -20,9 +20,14 @@ class Gioco {
   // funzioni di gioco
   void seleziona_modalita_();
   void controllo_fine_partita_(const ListaMosse& mosse_disponibili);
+
+  void umano_turno_generalizzato_(long int& tempo_rimasto, std::string colore);
   void umano_turno_bianco_();
-  void bot_turno_bianco_();
-  void bot_turno_nero_();
+  void umano_turno_nero_ ();
+  
+  void bot_turno_generalizzato_(long int& tempo_rimasto, std::string colore);
+  void bot_bianco_();
+  void bot_nero_();
 
  public:
   Gioco();

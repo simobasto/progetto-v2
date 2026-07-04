@@ -79,6 +79,16 @@ class ListaMosse {
     ++conteggio_;
   }
   const movimento& operator[](size_t indice) const { return lista_[indice]; }
+    ListaMosse& operator=(const ListaMosse& altra) {
+    if (this != &altra) { //controllo che non siano la stessa lista
+        conteggio_ = altra.conteggio_;
+        // allineiamo la dimensione effettiva
+        for (size_t i = 0; i < conteggio_; ++i) {
+            lista_[i] = altra.lista_[i];
+        }
+    }
+    return *this; //ritorna la lista modificata
+}
 };
 
 class Board {

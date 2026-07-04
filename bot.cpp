@@ -3,17 +3,16 @@
 namespace scacchi {
 
 int Bot::determina_profondita_ottimale_(const Board& b) const {
-  // caso standard
   int pezzi_rimasti{b.conta_pezzi()};
 
   if (pezzi_rimasti > 22) {
-    return 4;
+    return 6;  // inizio gioco
   } else if (pezzi_rimasti > 14) {
-    return 5;
+    return 7;  // inizio miedio gioco
   } else if (pezzi_rimasti > 8) {
-    return 6;
+    return 8;  // medio gioco puro
   } else {
-    return 7;  // Endgame
+    return 9;  // endgame
   }
 }
 
@@ -43,10 +42,8 @@ int Bot::valuta_scacchiera_(const Board& b) const {
         } else {
           v_pos = pst_re[indx];
         }
-        if (pezzo_corrente.colore == Colore::bianco) {
-          if (i == 2 || i == 6) punteggio += 40;  // Bonus Re al sicuro
-        } else if (pezzo_corrente.colore == Colore::nero) {
-          if (i == 58 || i == 62) punteggio -= 40;  // Sottraiamo per il Nero
+        if (indx == 2 || indx == 6) {
+          v_pos += 40;
         }
         break;
 
@@ -96,7 +93,7 @@ int Bot::valuta_scacchiera_(const Board& b) const {
   return punteggio;
 }
 
-// assengna un punteggio alle mosse, per i tagli
+// assengna un punteggio alle mosse, per i tagli e l'ordinamento
 int Bot::assegna_priorita_mossa_(const movimento& mossa) const {
   int priorita = 0;
 
@@ -161,26 +158,33 @@ int Bot::assegna_priorita_mossa_(const movimento& mossa) const {
 
 // ordina il vettore
 void Bot::ordina_mosse_(ListaMosse& lista_mosse) const {
+  // se c'è una sola mossa non c'è nulla da ordinare
+    size_t dimensione = lista_mosse.size();
+  if (dimensione <= 1) return;
+
+  // Array di punteggi
   std::array<int, 256> punteggi;
-  for (size_t i = 0; i < lista_mosse.size(); ++i) {
+  for (size_t i = 0; i < dimensione; ++i) {
     punteggi[i] = assegna_priorita_mossa_(lista_mosse[i]);
   }
 
-  for (size_t i = 0; i < lista_mosse.size() - 1; ++i) {
-    size_t indice_max = i;
-    for (size_t j = i + 1; j < lista_mosse.size(); ++j) {
-      if (punteggi[j] > punteggi[indice_max]) {
-        indice_max = j;
-      }
-    }
+  // array di indici
+  std::array<size_t, 256> indici;
+  for (size_t i = 0; i < dimensione; ++i) indici[i] = i;
 
-    if (indice_max != i) {
-      // Scambiamo sia la mossa che il punteggio precalcolato
-      std::swap(*(lista_mosse.begin() + i),
-                *(lista_mosse.begin() + indice_max));
-      std::swap(punteggi[i], punteggi[indice_max]);
-    }
+  
+  
+  std::sort(indici.begin(), indici.begin() + dimensione, [&punteggi](size_t a, size_t b) {
+      return punteggi[a] > punteggi[b];
+  });
+
+  // Ricostruiamo la lista originale spostando i movimenti una sola volta
+  ListaMosse lista_ordinata;
+  for (size_t i = 0; i < dimensione; ++i) {
+      lista_ordinata.push_back(lista_mosse[indici[i]]);
   }
+
+  lista_mosse = lista_ordinata;
 }
 
 int Bot::alfa_beta_(Board& b, const mosse& m, int profondita, int alfa,
@@ -248,9 +252,9 @@ int Bot::alfa_beta_(Board& b, const mosse& m, int profondita, int alfa,
       }
       return min_eval;
     }
-  } // fine if quiescence 
+  }  // fine if quiescence
 
-    if (b.e_triplice_ripetizione())
+  if (b.e_triplice_ripetizione())
     return 0;  // controllo la triplice ripetizione
   // generazione mosse
   ListaMosse mosse_legali_locali;
