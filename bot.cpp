@@ -28,7 +28,7 @@ int Bot::valuta_scacchiera_(const Board& b) const {
       continue;
     }
     size_t indx = static_cast<size_t>(
-        (pezzo_corrente.colore == Colore::nero) ? (i ^ 56) : i);
+        (pezzo_corrente.colore == Colore::bianco) ? (i ^ 56) : i);
 
     // inizializzo le variabili per il calcolo
     int v_standard{0};
@@ -36,7 +36,7 @@ int Bot::valuta_scacchiera_(const Board& b) const {
 
     switch (pezzo_corrente.tipo) {
       case Tipo::re:
-        v_standard = 200000;
+        v_standard = 2000000;
         if (e_endgame) {
           v_pos = pst_re_endgame[indx];
         } else {
@@ -188,69 +188,10 @@ void Bot::ordina_mosse_(ListaMosse& lista_mosse) const {
 int Bot::alfa_beta_(Board& b, const mosse& m, int profondita, int alfa,
                     int beta, int ply) const {
 
-  bool massimizza = (b.ottieni_turno() == Colore::bianco);
+bool massimizza = (b.ottieni_turno() == Colore::bianco);
   // quiescence search
   if (profondita <= 0) {
-    int punteggio_attuale = valuta_scacchiera_(b);
-
-    if (massimizza) {
-      if (punteggio_attuale >= beta) return punteggio_attuale; 
-      alfa = std::max(alfa, punteggio_attuale);
-    } else {
-      if (punteggio_attuale <= alfa) return punteggio_attuale; 
-      beta = std::min(beta, punteggio_attuale);
-    }
-
-    // generazione mosse
-    ListaMosse mosse_legali_locali;
-    b.ricerca_mosse_legali(m, mosse_legali_locali);
-
-    // filtro di quiete
-    // cancello le mosse che non catturano
-    auto nuovo_end =
-        std::ranges::remove_if(mosse_legali_locali, [](const movimento& mossa) {
-          return mossa.pezzo_in_arrivo.tipo == Tipo::vuoto &&
-                 !mossa.promozione && !mossa.e_en_passant;
-        });
-
-    size_t nuove_mosse_valide =
-        static_cast<size_t>(nuovo_end.begin() - mosse_legali_locali.begin());
-    mosse_legali_locali.resize(nuove_mosse_valide);
-
-    if (mosse_legali_locali.empty()) {
-      return punteggio_attuale;
-    }
-
-    // ordinamento mosse
-    ordina_mosse_(mosse_legali_locali);
-
-    if (massimizza) {
-      int max_eval = punteggio_attuale;
-      for (auto& mossa : mosse_legali_locali) {
-        b.esegui_mossa(mossa);
-        int eval = alfa_beta_(b, m, 0, alfa, beta, ply + 1);
-        b.annulla_mossa(mossa);
-        max_eval = std::max(max_eval, eval);
-        alfa = std::max(alfa, eval);
-        if (beta <= alfa) {
-          break;  // Taglio Alfa
-        }
-      }
-      return max_eval;
-    } else {
-      int min_eval = punteggio_attuale;
-      for (auto& mossa : mosse_legali_locali) {
-        b.esegui_mossa(mossa);
-        int eval = alfa_beta_(b, m, 0, alfa, beta, ply + 1);
-        b.annulla_mossa(mossa);
-        min_eval = std::min(min_eval, eval);
-        beta = std::min(beta, eval);
-        if (beta <= alfa) {
-          break;  // Taglio Beta
-        }
-      }
-      return min_eval;
-    }
+return quiescence_(b, m, alfa, beta, ply);
   }  // fine if quiescence
 
   if (b.e_triplice_ripetizione())
@@ -309,6 +250,69 @@ int Bot::alfa_beta_(Board& b, const mosse& m, int profondita, int alfa,
   }
 }
 
+int Bot::quiescence_(Board& b, const mosse& m, int alfa, int beta, int ply) const {
+    int punteggio_attuale = valuta_scacchiera_(b);
+bool massimizza = (b.ottieni_turno() == Colore::bianco);
+
+    if (massimizza) {
+      if (punteggio_attuale >= beta) return punteggio_attuale; 
+      alfa = std::max(alfa, punteggio_attuale);
+    } else {
+      if (punteggio_attuale <= alfa) return punteggio_attuale; 
+      beta = std::min(beta, punteggio_attuale);
+    }
+
+    // generazione mosse
+    ListaMosse mosse_legali_locali;
+    b.ricerca_mosse_legali(m, mosse_legali_locali);
+
+    // filtro di quiete
+    // cancello le mosse che non catturano
+    auto nuovo_end =
+        std::ranges::remove_if(mosse_legali_locali, [](const movimento& mossa) {
+          return mossa.pezzo_in_arrivo.tipo == Tipo::vuoto &&
+                 !mossa.promozione && !mossa.e_en_passant;
+        });
+
+    size_t nuove_mosse_valide =
+        static_cast<size_t>(nuovo_end.begin() - mosse_legali_locali.begin());
+    mosse_legali_locali.resize(nuove_mosse_valide);
+
+    if (mosse_legali_locali.empty()) {
+      return punteggio_attuale;
+    }
+
+    // ordinamento mosse
+    ordina_mosse_(mosse_legali_locali);
+
+    if (massimizza) {
+      int max_eval = punteggio_attuale;
+      for (auto& mossa : mosse_legali_locali) {
+        b.esegui_mossa(mossa);
+        int eval = quiescence_(b, m, alfa, beta, ply + 1);
+        b.annulla_mossa(mossa);
+        max_eval = std::max(max_eval, eval);
+        alfa = std::max(alfa, eval);
+        if (beta <= alfa) {
+          break;  // Taglio beta
+        }
+      }
+      return max_eval;
+    } else {
+      int min_eval = punteggio_attuale;
+      for (auto& mossa : mosse_legali_locali) {
+        b.esegui_mossa(mossa);
+        int eval = quiescence_(b, m, alfa, beta, ply + 1);
+        b.annulla_mossa(mossa);
+        min_eval = std::min(min_eval, eval);
+        beta = std::min(beta, eval);
+        if (beta <= alfa) {
+          break;  // Taglio alfa
+        }
+      }
+      return min_eval;
+    }
+}
 // algoritmo di scelta della mossa
 movimento Bot::trova_mossa_migliore(Board& b, const mosse& m) {
   ListaMosse mosse_legali;

@@ -75,6 +75,7 @@ class Bot {
 
   void ordina_mosse_(ListaMosse& lista_mosse) const;
 
+  int quiescence_(Board& b, const mosse& m, int alfa, int beta, int ply) const;
   int alfa_beta_(Board& b, const mosse& m, int profondita, int alfa, int beta,
                  int ply) const;  // serve per analizzare gli scenari futuro
 

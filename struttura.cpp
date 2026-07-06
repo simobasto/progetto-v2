@@ -329,8 +329,8 @@ bool Board::re_sotto_scacco(Colore colore_re, const mosse& m) const {
   // controllo i pedoni
   const auto& mosse_pedone =
       (colore_re == Colore::bianco)
-          ? m.mosse_pedone_nero[indx_pos_re].cattura_del_pedone
-          : m.mosse_pedone_bianco[indx_pos_re].cattura_del_pedone;
+          ? m.mosse_pedone_bianco[indx_pos_re].cattura_del_pedone
+          : m.mosse_pedone_nero[indx_pos_re].cattura_del_pedone;
 
   for (const auto& d : mosse_pedone) {
     Pezzo p = scacchiera_[static_cast<size_t>(d)];
