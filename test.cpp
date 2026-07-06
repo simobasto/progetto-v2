@@ -274,10 +274,10 @@ TEST_CASE("Test modulo: struttura") {
     Pezzo casella_vuota{b.ottieni_pezzo(20)};
     movimento mv{pedone_bianco, casella_vuota, 12, 20};
 
-    // Eseguiamo la mossa: la cronologia sale di 1 elemento internamente
+    // Eseguiamo la mossa: la cronologia sale di 1 elemento 
     b.esegui_mossa(mv);
 
-    // Annulliamo la mossa: pop_back() deve rimuovere esattamente quell'elemento
+    // Annulliamo la mossa, pop_back() rimuove l'ultimo elemento
     b.annulla_mossa(mv);
 
     // Se la simmetria è corretta, lo stato torna pulito e

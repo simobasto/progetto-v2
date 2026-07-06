@@ -287,7 +287,7 @@ void Board::annulla_mossa(movimento& m) {
 }
 
 bool Board::re_sotto_scacco(Colore colore_re, const mosse& m) const {
-  // int pos_re = (colore_re == Colore::bianco) ? pos_re_bianco : pos_re_nero;
+
   int pos_re = (colore_re == Colore::bianco) ? pos_re_bianco_ : pos_re_nero_;
   Colore nemico = (colore_re == Colore::bianco) ? Colore::nero : Colore::bianco;
   size_t indx_pos_re{static_cast<size_t>(pos_re)};
@@ -329,8 +329,8 @@ bool Board::re_sotto_scacco(Colore colore_re, const mosse& m) const {
   // controllo i pedoni
   const auto& mosse_pedone =
       (colore_re == Colore::bianco)
-          ? m.mosse_pedone_bianco[indx_pos_re].cattura_del_pedone
-          : m.mosse_pedone_nero[indx_pos_re].cattura_del_pedone;
+          ? m.mosse_pedone_nero[indx_pos_re].cattura_del_pedone
+          : m.mosse_pedone_bianco[indx_pos_re].cattura_del_pedone;
 
   for (const auto& d : mosse_pedone) {
     Pezzo p = scacchiera_[static_cast<size_t>(d)];
@@ -346,9 +346,9 @@ bool Board::re_sotto_scacco(Colore colore_re, const mosse& m) const {
 }
 
 void Board::ricerca_mosse_legali(const mosse& m,
-                                 ListaMosse& lista_mosse_da_riempire) {
-  // Svuotiamo la lista passata dall'esterno (operazione istantanea)
-  lista_mosse_da_riempire.clear();
+                                 ListaMosse& lista_mosse) {
+  // Svuotiamo la lista
+  lista_mosse.clear();
   ListaMosse mosse_pseudo_legali;
 
   auto filtro_tipo_di_pezzo = [&](int i) {
@@ -420,7 +420,7 @@ void Board::ricerca_mosse_legali(const mosse& m,
 
     if (!re_sotto_scacco(colore_re, m)) {  // Se il re è al sicuro...
 
-      lista_mosse_da_riempire.push_back(mv);
+      lista_mosse.push_back(mv);
     }
     annulla_mossa(mv);  // torno indietro
   }
@@ -477,7 +477,7 @@ void Board::stampa_scacchiera() const {
     for (int col = 0; col < 8; ++col) {
       Pezzo p = ottieni_pezzo(riga * 8 + col);
 
-      // Conversione dei valori enum in indici per la tabella
+      // Conversione dei valori enum in indici 
       size_t col_idx = static_cast<size_t>(p.colore) / 8;
       size_t tipo_idx = static_cast<size_t>(p.tipo);
 
@@ -529,7 +529,6 @@ void Board::filtro_re_(int partenza, const mosse& m,
     if (arrocco_bianco_lungo_ && scacchiera_[3].tipo == Tipo::vuoto &&
         scacchiera_[2].tipo == Tipo::vuoto &&
         scacchiera_[1].tipo == Tipo::vuoto) {
-      // la salvo
 
       movimento arr_lungo{pezzo_partenza, {Tipo::vuoto, Colore::nessuno}, 4, 2};
       // modifico l'indicatore bool
