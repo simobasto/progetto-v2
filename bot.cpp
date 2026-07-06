@@ -186,7 +186,9 @@ void Bot::ordina_mosse_(ListaMosse& lista_mosse) const {
 }
 
 int Bot::alfa_beta_(Board& b, const mosse& m, int profondita, int alfa,
-                    int beta, bool massimizza, int ply) const {
+                    int beta, int ply) const {
+
+  bool massimizza = (b.ottieni_turno() == Colore::bianco);
   // quiescence search
   if (profondita <= 0) {
     int punteggio_attuale = valuta_scacchiera_(b);
@@ -226,7 +228,7 @@ int Bot::alfa_beta_(Board& b, const mosse& m, int profondita, int alfa,
       int max_eval = punteggio_attuale;
       for (auto& mossa : mosse_legali_locali) {
         b.esegui_mossa(mossa);
-        int eval = alfa_beta_(b, m, 0, alfa, beta, false, ply + 1);
+        int eval = alfa_beta_(b, m, 0, alfa, beta, ply + 1);
         b.annulla_mossa(mossa);
         max_eval = std::max(max_eval, eval);
         alfa = std::max(alfa, eval);
@@ -239,7 +241,7 @@ int Bot::alfa_beta_(Board& b, const mosse& m, int profondita, int alfa,
       int min_eval = punteggio_attuale;
       for (auto& mossa : mosse_legali_locali) {
         b.esegui_mossa(mossa);
-        int eval = alfa_beta_(b, m, 0, alfa, beta, true, ply + 1);
+        int eval = alfa_beta_(b, m, 0, alfa, beta, ply + 1);
         b.annulla_mossa(mossa);
         min_eval = std::min(min_eval, eval);
         beta = std::min(beta, eval);
@@ -276,7 +278,7 @@ int Bot::alfa_beta_(Board& b, const mosse& m, int profondita, int alfa,
 
     for (auto& mossa : mosse_legali_locali) {
       b.esegui_mossa(mossa);
-      int eval = alfa_beta_(b, m, profondita - 1, alfa, beta, false, ply + 1);
+      int eval = alfa_beta_(b, m, profondita - 1, alfa, beta, ply + 1);
       b.annulla_mossa(mossa);
 
       max_eval = std::max(max_eval, eval);
@@ -293,7 +295,7 @@ int Bot::alfa_beta_(Board& b, const mosse& m, int profondita, int alfa,
 
     for (auto& mossa : mosse_legali_locali) {
       b.esegui_mossa(mossa);
-      int eval = alfa_beta_(b, m, profondita - 1, alfa, beta, true, ply + 1);
+      int eval = alfa_beta_(b, m, profondita - 1, alfa, beta, ply + 1);
       b.annulla_mossa(mossa);
 
       min_eval = std::min(min_eval, eval);
@@ -345,7 +347,7 @@ movimento Bot::trova_mossa_migliore(Board& b, const mosse& m) {
     for (auto& mossa : mosse_legali) {
       b.esegui_mossa(mossa);
 
-      int eval = alfa_beta_(b, m, profondita - 1, alfa, beta, !sono_bianco, 1);
+      int eval = alfa_beta_(b, m, profondita - 1, alfa, beta, 1);
       b.annulla_mossa(mossa);
 
       if (sono_bianco) {

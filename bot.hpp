@@ -76,7 +76,6 @@ class Bot {
   void ordina_mosse_(ListaMosse& lista_mosse) const;
 
   int alfa_beta_(Board& b, const mosse& m, int profondita, int alfa, int beta,
-                 bool massimizza,
                  int ply) const;  // serve per analizzare gli scenari futuro
 
  public:
@@ -91,6 +90,5 @@ class Bot {
   int test_determina_profondita_ottimale_(const Board& b) const {
     return determina_profondita_ottimale_(b);
   }
-
 };
 }  // namespace scacchi
